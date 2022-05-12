@@ -31,14 +31,26 @@ func TestHex_String(t *testing.T) {
 // 失敗理由を出力してテストを失敗させる
 // テスト関数を継続：t.Error, t.Errorf
 // テスト関数を終了：t.Fatal, t.Fatalf
+// testing.T: TestXxxの引数
+// t.Fatal: テストを終了し、失敗内容を出力する
+// t.Error: テストを継続しつつ、失敗内容を出力する
+// t.Run: サブテストを実行できる
+// t.Parallel: テストを並列に実行する
 // テストの並列実行
 // t.Parallel（テスト関数の先頭で呼び出す）
 // go testの-parallelオプションで並列数を指定
 // ベンチマーク
 // *testing.B型を使う
+//b.ResetTimer: 経過時間とメモリカウンターをリセットする
 // ブラックボックステスト
 // testing/quickパッケージ
 // あまり積極的には使わない
+// go test -bench .　でテスト実行
+func BenchmarkFizzBuzz(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		// fizzbuzz.FizzBuzz(i)
+	}
+}
 
 // ** テストの後処理
 // t.Cleanup
