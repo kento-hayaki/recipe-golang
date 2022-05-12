@@ -12,6 +12,7 @@ type Hex int
 
 func (h Hex) String() string {
 	return fmt.Sprintf("%x", int(h))
+	test
 }
 
 func IsOdd(i int) bool {
