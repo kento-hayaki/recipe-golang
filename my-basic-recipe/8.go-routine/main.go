@@ -28,10 +28,13 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"runtime"
 	"sync"
 	"time"
@@ -488,4 +491,46 @@ func WithoutCache(ctx context.Context) context.Context {
 }
 func IsIgnoredCache(ctx context.Context) bool {
 	return ctx.Value(withoutCacheKey{}) != nil
+}
+
+// goroutineでふくすうのapiリクエストを行う
+func getMessageByGoroutine(apis []string) {
+	ch := make(chan int, len(apis))
+
+	var wg sync.WaitGroup
+	for _, api := range apis {
+		wg.Add(1)
+		go func(api string) {
+			myStruct := getMyStruct(api)
+			ch <- myStruct.Num
+			wg.Done()
+		}(api)
+	}
+	wg.Wait()
+	close(ch)
+	var totalNum int
+	for c := range ch {
+		totalNum += c
+	}
+
+	// 8
+	fmt.Println(totalNum)
+}
+
+// http.Getをおこない値を取得する
+func getMyStruct(api string) MyStruct {
+	resp, err := http.Get(api)
+	if err != nil { /* エラー処理 */
+	}
+	defer resp.Body.Close()
+	var p MyStruct
+
+	byteArray, err := ioutil.ReadAll(resp.Body)
+	if err != nil { /* エラー処理 */
+	}
+
+	if err := json.Unmarshal(byteArray, &p); err != nil {
+		panic(err)
+	}
+	return p
 }
